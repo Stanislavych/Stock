@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Stock.BusinessLogic.Interfaces;
 
 namespace Stock.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class ItemController : Controller
     {
         private readonly IItemService _itemService;
@@ -12,7 +11,8 @@ namespace Stock.Controllers
         {
             _itemService = itemService;
         }
-        [HttpGet("/")]
+
+        [HttpGet]
         public IActionResult Index()
         {
             var items = _itemService.GetAllItems();
