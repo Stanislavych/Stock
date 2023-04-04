@@ -1,51 +1,34 @@
 ﻿@using Stock.Models.Models
-@model List<Stock.Models.Models.Item>
+@model List<Item>
 
 <h1>Список предметов</h1>
-
 @{
     ViewData["Title"] = "Склад";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="table-responsive">
-    <table class="table">
-        <thead>
+    <table class="table table-striped">
+        <thead class="thead-dark">
             <tr>
                 <th>Айди</th>
                 <th>Название</th>
                 <th>Тип предмета</th>
-                <th>Дата поступления</th>
                 <th>Производитель</th>
                 <th>Адрес производителя</th>
-                <th>Фотография</th>
+                <th>Изображение</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ItemType)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ReceiptDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Manufacturer)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ManufacturerAddress)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Image)
-                    </td>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.ItemType</td>
+                    <td>@item.Manufacturer</td>
+                    <td>@item.ManufacturerAddress</td>
+                    <td>@item.Image</td>
                 </tr>
             }
         </tbody>

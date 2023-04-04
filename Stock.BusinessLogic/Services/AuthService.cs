@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Stock.BusinessLogic.Interfaces;
 using Stock.Common.Dto;
+using Stock.Models;
 using Stock.Models.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,10 +15,12 @@ namespace Stock.BusinessLogic.Services
     {
 
         private readonly IConfiguration _configuration;
+        private readonly ApplicationContext _context;
 
-        public AuthService(IConfiguration configuration)
+        public AuthService(IConfiguration configuration, ApplicationContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         public async Task<User> Register(UserDto request)
@@ -28,7 +31,8 @@ namespace Stock.BusinessLogic.Services
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-
+            _context.Users.Add(user);
+            _context.SaveChanges();
             return user;
         }
 
