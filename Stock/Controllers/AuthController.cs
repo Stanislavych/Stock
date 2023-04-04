@@ -42,5 +42,12 @@ namespace Stock.Controllers
             Response.Cookies.Append("jwt", token);
             return RedirectToAction("Index", "Item");
         }
+        public IActionResult Logout()
+        {
+            // Удаляем куки с токеном
+            Response.Cookies.Delete("jwt");
+
+            return RedirectToAction("Index", "Item");
+        }
     }
 }

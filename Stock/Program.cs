@@ -5,6 +5,8 @@ using Stock.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,15 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.Use(async (context, next) =>
+{
+    var jwt = context.Request.Cookies["jwt"];
+    if (!string.IsNullOrEmpty(jwt))
+    {
+        context.Request.Headers.Add("Authorization", $"Bearer {jwt}");
+    }
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
