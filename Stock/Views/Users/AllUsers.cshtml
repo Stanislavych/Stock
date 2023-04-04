@@ -1,0 +1,32 @@
+﻿@using Stock.Models.Models
+@model List<User>
+
+<h1>Список пользователей</h1>
+@{
+	ViewData["Title"] = "Склад";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead class="thead-dark">
+			<tr>
+				<th>Айди</th>
+				<th>Логин</th>
+				<th>PasswordHash</th>
+				<th>PasswordSalt</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var user in Model)
+			{
+				<tr>
+					<td>@user.Id</td>
+					<td>@user.Username</td>
+					<td>@Convert.ToBase64String(user.PasswordHash)</td>
+					<td>@Convert.ToBase64String(user.PasswordSalt)</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

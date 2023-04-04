@@ -5,7 +5,6 @@ using Stock.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
