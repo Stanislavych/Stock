@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Stock.BusinessLogic.Interfaces;
 using Stock.Common.Dto;
@@ -38,14 +39,14 @@ namespace Stock.BusinessLogic.Services
 
         public async Task<string> Login(UserDto request)
         {
-            User user = new User();
-            if (user.Username != request.Username)
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            if (user==null)
             {
-                return "Пользователь не найден!";
+                throw new Exception("Пользователь не найден!");
             }
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return "Неверный пароль!";
+                throw new Exception("Неверный пароль!");
             }
             string token = CreateToken(user);
             return token;

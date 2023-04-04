@@ -13,7 +13,15 @@ namespace Stock.Controllers
         }
 
         [HttpGet]
+
         public IActionResult Index()
+        {
+            var items = _itemService.GetAllItems();
+            return View(items);
+        }
+        [HttpGet]
+        [Authorize]
+        public IActionResult MyItems()
         {
             var items = _itemService.GetAllItems();
             return View(items);

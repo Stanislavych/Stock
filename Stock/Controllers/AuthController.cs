@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stock.BusinessLogic.Interfaces;
 using Stock.Common.Dto;
-using Stock.Models.Models;
 
 namespace Stock.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthController : Controller
     {
@@ -15,26 +14,33 @@ namespace Stock.Controllers
         {
             _authService = authService;
         }
-
-        [HttpPost("Register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        [HttpGet("Register")]
+        public IActionResult Register()
         {
-            User user = await _authService.Register(request);
-
-            return Ok(user);
+            return View();
         }
 
-        [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> RegisterPost([FromForm] UserDto request)
+        {
+            await _authService.Register(request);
+            return RedirectToAction("Index", "Item");
+        }
+        [HttpGet("Login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<string>> Login([FromForm] UserDto request)
         {
             string token = await _authService.Login(request);
 
-            if (token.StartsWith("Ошибка:"))
-            {
-                return BadRequest(token);
-            }
-
-            return Ok(token);
+            // сохраняем токен в куки
+            Response.Cookies.Append("jwt", token);
+            return RedirectToAction("Index", "Item");
         }
     }
 }

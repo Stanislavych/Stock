@@ -1,0 +1,36 @@
+﻿@using Stock.Models.Models
+@model List<Item>
+
+<h1>Мои предметы</h1>
+@{
+    ViewData["Title"] = "Склад";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Айди</th>
+                <th>Название</th>
+                <th>Тип предмета</th>
+                <th>Производитель</th>
+                <th>Адрес производителя</th>
+                <th>Изображение</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.ItemType</td>
+                    <td>@item.Manufacturer</td>
+                    <td>@item.ManufacturerAddress</td>
+                    <td>@item.Image</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

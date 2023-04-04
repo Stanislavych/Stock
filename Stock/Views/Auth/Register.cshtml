@@ -1,0 +1,16 @@
+﻿@using Stock.Common.Dto
+@model UserDto
+
+<h1>Регистрация</h1>
+
+<form method="post" asp-controller="Auth" asp-action="register">
+    <div class="form-group">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" class="form-control" id="username" name="username">
+    </div>
+    <div class="form-group">
+        <label for="password">Пароль:</label>
+        <input type="password" class="form-control" id="password" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+</form>
