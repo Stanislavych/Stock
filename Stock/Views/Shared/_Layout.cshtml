@@ -21,7 +21,11 @@
 		.footer {
 			background-color: #212529;
 			color: #fff;
-			padding: 10px 0;
+			position: fixed;
+			left: 0;
+			bottom: 0;
+			width: 100%;
+			padding: 10px;
 			text-align: center;
 		}
 	</style>
@@ -35,12 +39,18 @@
 					<li class="nav-item">
 						<a class="nav-link" asp-controller="Item" asp-action="Index">Все предметы</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" asp-controller="Item" asp-action="MyItems">Мои предметы</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" asp-controller="Users" asp-action="AllUsers">Все пользователи</a>
-					</li>
+					@if (User.Identity.IsAuthenticated)
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-controller="Item" asp-action="MyItems">Мои предметы</a>
+						</li>
+					}
+					@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-controller="Users" asp-action="AllUsers">Все пользователи</a>
+						</li>
+					}
 					@if (User.Identity.IsAuthenticated)
 					{
 						<li class="nav-item">

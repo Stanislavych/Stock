@@ -4,10 +4,10 @@
     {
         public int Id { get; set; }
         public DateTime ReceiptDate { get; set; }
-        public string Name { get; set; }
-        public string Manufacturer { get; set; }
-        public string ManufacturerAddress { get; set; }
-        public string ItemType { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Manufacturer { get; set; } = string.Empty;
+        public string ManufacturerAddress { get; set; } = string.Empty;
+        public string ItemType { get; set; } = string.Empty ;
         public byte[]? Image { get; set; }
     }
 }
