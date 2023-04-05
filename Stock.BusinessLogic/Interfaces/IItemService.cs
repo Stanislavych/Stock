@@ -5,7 +5,8 @@ namespace Stock.BusinessLogic.Interfaces
     public interface IItemService
     {
         List<Item> GetAllItems();
-        Task AddItemAsync(Item item);
+        List<Item> GetUserItems(int userId);
+        Task AddItemAsync(Item item, User user);
         Task EditItemAsync(Item item);
         Task RemoveItemAsync(int itemId);
     }

@@ -57,7 +57,7 @@ namespace Stock.BusinessLogic.Services
             List<Claim> claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, "User")
+            new Claim(ClaimTypes.Role, "Admin")
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(

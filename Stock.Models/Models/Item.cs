@@ -9,5 +9,7 @@
         public string ManufacturerAddress { get; set; } = string.Empty;
         public string ItemType { get; set; } = string.Empty ;
         public byte[]? Image { get; set; }
-    }
+		public int UserId { get; set; }
+		public User User { get; set; }
+	}
 }

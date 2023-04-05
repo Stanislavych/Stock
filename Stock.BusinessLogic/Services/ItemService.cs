@@ -16,8 +16,14 @@ namespace Stock.BusinessLogic.Services
             var items = _context.Items.ToList();
             return items;
         }
-        public async Task AddItemAsync(Item item)
+        public List<Item> GetUserItems(int userId)
         {
+            var userItems = _context.Items.Where(item => item.UserId == userId).ToList();
+            return userItems;
+        }
+        public async Task AddItemAsync(Item item, User user)
+        {
+            item.UserId = user.Id;
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
         }

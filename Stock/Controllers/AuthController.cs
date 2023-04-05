@@ -22,10 +22,10 @@ namespace Stock.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterPost([FromForm] UserDto request)
+        public async Task<IActionResult> Register([FromForm] UserDto request)
         {
             await _authService.Register(request);
-            return RedirectToAction("Index", "Item");
+            return RedirectToAction("Login", "Auth");
         }
         [HttpGet("Login")]
         public IActionResult Login()

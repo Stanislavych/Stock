@@ -16,5 +16,9 @@ namespace Stock.BusinessLogic.Services
             var users = _context.Users.ToList();
             return users;
         }
+        public User GetUserByName(string username)
+		{
+            return _context.Users.FirstOrDefault(u => u.Username == username);
+        }
     }
 }

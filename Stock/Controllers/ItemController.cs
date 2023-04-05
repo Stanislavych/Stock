@@ -8,9 +8,11 @@ namespace Stock.Controllers
     public class ItemController : Controller
     {
         private readonly IItemService _itemService;
-        public ItemController(IItemService itemService)
+        private readonly IUsersService _usersService;
+        public ItemController(IItemService itemService, IUsersService usersService)
         {
             _itemService = itemService;
+            _usersService = usersService;
         }
 
         [HttpGet]
@@ -19,30 +21,35 @@ namespace Stock.Controllers
             var items = _itemService.GetAllItems();
             return View(items);
         }
-		[HttpGet]
-		[Authorize]
-		public IActionResult MyItems()
+        [HttpGet]
+        [Authorize]
+        public IActionResult MyItems()
         {
-            var items = _itemService.GetAllItems();
-            return View(items);
+            var username = User.Identity.Name;
+            var user = _usersService.GetUserByName(username);
+            var items = _itemService.GetUserItems(user.Id);
+            var filteredItems = items.Where(item => item.UserId == user.Id).ToList();
+            return View(filteredItems);
         }
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddItem([FromForm]Item item)
+        public async Task<IActionResult> AddItem([FromForm] Item item)
         {
-            await _itemService.AddItemAsync(item);
+            var username = User.Identity.Name;
+            var user = _usersService.GetUserByName(username);
+            await _itemService.AddItemAsync(item, user);
             return RedirectToAction("MyItems");
         }
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> EditItem([FromForm]Item item)
+        public async Task<IActionResult> EditItem([FromForm] Item item)
         {
             await _itemService.EditItemAsync(item);
             return RedirectToAction("MyItems");
         }
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> RemoveItem([FromForm]int itemId)
+        public async Task<IActionResult> RemoveItem([FromForm] int itemId)
         {
             await _itemService.RemoveItemAsync(itemId);
             return RedirectToAction("MyItems");
