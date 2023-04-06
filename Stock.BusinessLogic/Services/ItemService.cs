@@ -24,17 +24,32 @@ namespace Stock.BusinessLogic.Services
         public async Task AddItemAsync(Item item, User user)
         {
             item.UserId = user.Id;
+            item.ReceiptDate = DateTime.Now;
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
         }
-        public async Task EditItemAsync(Item item)
+        public async Task EditItemAsync(Item item, User user)
         {
+            var currentItem = await _context.Items.FindAsync(item.Id);
+            item.ReceiptDate = DateTime.Now;
+            if (currentItem == null)
+                throw new Exception("Предмет не найден");
+
+            if (item.UserId != user.Id)
+                throw new Exception("Вы не можете изменить чужой предмет");
             _context.Items.Update(item);
             await _context.SaveChangesAsync();
         }
-        public async Task RemoveItemAsync(int itemId)
+        public async Task RemoveItemAsync(int itemId, User user)
         {
             var item = await _context.Items.FindAsync(itemId);
+
+            if (item == null)
+                throw new Exception("Предмет не найден");
+
+            if (item.UserId != user.Id)
+                throw new Exception("Вы не можете удалить чужой предмет");
+
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
         }

@@ -44,14 +44,18 @@ namespace Stock.Controllers
         [Authorize]
         public async Task<IActionResult> EditItem([FromForm] Item item)
         {
-            await _itemService.EditItemAsync(item);
+            var username = User.Identity.Name;
+            var user = _usersService.GetUserByName(username);
+            await _itemService.EditItemAsync(item, user);
             return RedirectToAction("MyItems");
         }
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> RemoveItem([FromForm] int itemId)
         {
-            await _itemService.RemoveItemAsync(itemId);
+            var username = User.Identity.Name;
+            var user = _usersService.GetUserByName(username);
+            await _itemService.RemoveItemAsync(itemId, user);
             return RedirectToAction("MyItems");
         }
     }

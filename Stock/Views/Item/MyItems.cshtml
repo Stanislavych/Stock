@@ -74,9 +74,7 @@
 										<label for="image-@item.Id">Изображение</label>
 										<input type="text" class="form-control" id="image-@item.Id" value="@item.Image" name="Image">
 									</div>
-									<input type="hidden" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="ReceiptDate" />
 									<input type="hidden" value="@item.Id" name="Id" />
-									<input type="hidden" value="@item.UserId" name="UserId" />
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 										<button type="submit" class="btn btn-primary">Сохранить изменения</button>
@@ -146,7 +144,6 @@
 						<label for="image">Изображение</label>
 						<input type="text" class="form-control" id="image" name="Image">
 					</div>
-					<input type="hidden" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="ReceiptDate" />
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 						<button type="submit" class="btn btn-primary" id="addButton">Добавить предмет</button>

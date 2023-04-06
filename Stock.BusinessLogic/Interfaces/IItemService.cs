@@ -7,7 +7,7 @@ namespace Stock.BusinessLogic.Interfaces
         List<Item> GetAllItems();
         List<Item> GetUserItems(int userId);
         Task AddItemAsync(Item item, User user);
-        Task EditItemAsync(Item item);
-        Task RemoveItemAsync(int itemId);
+        Task EditItemAsync(Item item, User user);
+        Task RemoveItemAsync(int itemId, User user);
     }
 }

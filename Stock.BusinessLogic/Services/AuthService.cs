@@ -26,12 +26,18 @@ namespace Stock.BusinessLogic.Services
 
         public async Task<User> Register(UserDto request)
         {
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            if (existingUser != null)
+            {
+                throw new Exception("Пользователь с таким именем уже существует");
+            }
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             User user = new User();
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            user.RoleId = 2;
             _context.Users.Add(user);
             _context.SaveChanges();
             return user;
@@ -39,7 +45,7 @@ namespace Stock.BusinessLogic.Services
 
         public async Task<string> Login(UserDto request)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            User user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == request.Username);
             if (user==null)
             {
                 throw new Exception("Пользователь не найден!");
@@ -57,7 +63,7 @@ namespace Stock.BusinessLogic.Services
             List<Claim> claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim(ClaimTypes.Role, user.Role.Name)
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
