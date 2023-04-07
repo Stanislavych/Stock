@@ -13,8 +13,8 @@
 			<tr>
 				<th>Айди</th>
 				<th>Логин</th>
-				<th>PasswordHash</th>
-				<th>PasswordSalt</th>
+				<th>Роль</th>
+				<th>Действия</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -23,9 +23,85 @@
 				<tr>
 					<td>@user.Id</td>
 					<td>@user.Username</td>
-					<td>@Convert.ToBase64String(user.PasswordHash)</td>
-					<td>@Convert.ToBase64String(user.PasswordSalt)</td>
+					@if (user.RoleId == 1)
+					{
+						<td>Администратор</td>
+					}
+					@if (user.RoleId == 2)
+					{
+						<td>Пользователь</td>
+					}
+					<td>
+						<!-- Кнопки для изменения и удаления предмета -->
+					<button class="btn btn-primary" data-toggle="modal" data-target="#editModal-@user.Id">Изменить</button>
+						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-@user.Id">Удалить</button>
+					</td>
 				</tr>
+				<!-- Модальное окно для изменения пользователя -->
+				<div class="modal fade" id="editModal-@user.Id" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-@user.Id" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="editModalLabel-@user.Id">Изменение пользователя: @user.Username</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<!-- Форма для редактирования данных о пользователе -->
+							<form form method="post" action="@Url.Action("EditUser", "Users")">
+									<div class="form-group">
+										<label for="name-@user.Id">Логин</label>
+										<input type="text" class="form-control" id="name-@user.Id" value="@user.Username" name="Username">
+									</div>
+									<div class="form-group">
+										<label for="name-@user.Id">Пароль</label>
+										<input type="text" class="form-control" id="name-@user.Id" name="password">
+									</div>
+									<div class="form-group">
+										<label for="role-@user.Id">Роль</label>
+										<select class="form-control" id="role-@user.Id" name="RoleId">
+											<option value="1" @if(user.RoleId == 1) {
+									    <text>selected</text>
+											}>Администратор</option>
+											<option value="2" @if(user.RoleId == 2) {
+									    <text>selected</text>
+											}>Пользователь</option>
+										</select>
+									</div>
+									<input type="hidden" value="@user.Id" name="Id" />
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+										<button type="submit" class="btn btn-primary">Сохранить изменения</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Модальное окно для подтверждения удаления пользователя -->
+				<div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deleteModalLabel-@user.Id">Удаление пользователя: @user.Username</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								Вы уверены, что хотите удалить пользователя @user.Username?
+							</div>
+							<div class="modal-footer">
+								<form method="post" action="@Url.Action("RemoveUser", "Users")">
+									<input type="hidden" value="@user.Id" name="userId" />
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+									<button type="submit" class="btn btn-danger">Удалить</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
 			}
 		</tbody>
 	</table>

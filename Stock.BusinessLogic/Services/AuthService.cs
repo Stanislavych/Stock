@@ -24,7 +24,7 @@ namespace Stock.BusinessLogic.Services
             _context = context;
         }
 
-        public async Task<User> Register(UserDto request)
+        public async Task RegisterAsync(UserDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
             if (existingUser != null)
@@ -40,10 +40,28 @@ namespace Stock.BusinessLogic.Services
             user.RoleId = 2;
             _context.Users.Add(user);
             _context.SaveChanges();
-            return user;
+            
+        }
+        public async Task RegisterAdminAsync(UserDto request)
+        {
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            if (existingUser != null)
+            {
+                throw new Exception("Пользователь с таким именем уже существует");
+            }
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            User admin = new User();
+            admin.Username = request.Username;
+            admin.PasswordHash = passwordHash;
+            admin.PasswordSalt = passwordSalt;
+            admin.RoleId = 1;
+            _context.Users.Add(admin);
+            _context.SaveChanges();
+            
         }
 
-        public async Task<string> Login(UserDto request)
+        public async Task<string> LoginAsync(UserDto request)
         {
             User user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == request.Username);
             if (user==null)

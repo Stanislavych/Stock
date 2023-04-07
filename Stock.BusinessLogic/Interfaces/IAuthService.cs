@@ -5,7 +5,9 @@ namespace Stock.BusinessLogic.Interfaces
 {
     public interface IAuthService
     {
-        Task<User> Register(UserDto request);
-        Task<string> Login(UserDto request);
+        Task RegisterAsync(UserDto request);
+        Task<string> LoginAsync(UserDto request);
+        Task RegisterAdminAsync(UserDto request);
+
     }
 }

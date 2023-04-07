@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Stock.Common.Dto;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -28,7 +29,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
+
 var app = builder.Build();
+
+//создание первоначального админа
+//var authService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IAuthService>();
+
+//var admin = new UserDto { Username = "admin", Password = "admin" };
+//await authService.RegisterAdmin(admin);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

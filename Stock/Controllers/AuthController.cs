@@ -24,7 +24,7 @@ namespace Stock.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromForm] UserDto request)
         {
-            await _authService.Register(request);
+            await _authService.RegisterAsync(request);
             return RedirectToAction("Login", "Auth");
         }
         [HttpGet("Login")]
@@ -36,7 +36,7 @@ namespace Stock.Controllers
         [Route("login")]
         public async Task<ActionResult<string>> Login([FromForm] UserDto request)
         {
-            string token = await _authService.Login(request);
+            string token = await _authService.LoginAsync(request);
 
             // сохраняем токен в куки
             Response.Cookies.Append("jwt", token);
