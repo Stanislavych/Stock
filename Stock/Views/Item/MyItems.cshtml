@@ -101,6 +101,7 @@
 							<div class="modal-body">
 								<!-- Форма для редактирования данных о предмете -->
 							<form method="post" action="/item/edititem">
+								<input type="hidden" value="@item.UserId" name="UserId"/>
 									<div class="form-group">
 										<label for="name-@item.Id">Название</label>
 										<input type="text" class="form-control" id="name-@item.Id" value="@item.Name" name="Name">

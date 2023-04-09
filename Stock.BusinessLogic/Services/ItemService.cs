@@ -64,17 +64,19 @@ namespace Stock.BusinessLogic.Services
             item.ReceiptDate = DateTime.Now;
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
+
         }
         public async Task EditItemAsync(Item item, User user)
         {
             var currentItem = await _context.Items.FindAsync(item.Id);
-            item.ReceiptDate = DateTime.Now;
             if (currentItem == null)
                 throw new Exception("Предмет не найден");
 
-            if (item.UserId != user.Id)
+            if (currentItem.UserId != user.Id || item.UserId != user.Id)
                 throw new Exception("Вы не можете изменить чужой предмет");
-            _context.Items.Update(item);
+
+            item.ReceiptDate = DateTime.Now;
+            _context.Entry(currentItem).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
         }
         public async Task RemoveItemAsync(int itemId, User user)
