@@ -28,8 +28,7 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             var items = _itemService.GetUserItems(user.Id);
-            var filteredItems = items.Where(item => item.UserId == user.Id).ToList();
-            return View(filteredItems);
+            return View(items);
         }
         [HttpPost]
         [Authorize]
@@ -57,6 +56,20 @@ namespace Stock.Controllers
             var user = _usersService.GetUserByName(username);
             await _itemService.RemoveItemAsync(itemId, user);
             return RedirectToAction("MyItems");
+        }
+        [HttpPost]
+        public async Task<IActionResult> FilteringItems([FromForm] string name, [FromForm] DateTime? receiptDate, [FromForm] string manufacturer)
+        {
+            var filteredItems = await _itemService.GetFilteredItemsAsync(name, receiptDate, manufacturer);
+            return View("Index", filteredItems);
+        }
+        [HttpPost]
+        public async Task<IActionResult> FilteringUserItems([FromForm] string name, [FromForm] DateTime? receiptDate, [FromForm] string manufacturer)
+        {
+            var username = User.Identity.Name;
+            var user = _usersService.GetUserByName(username);
+            var filteredItems = await _itemService.GetFilteredUserItemsAsync(user.Id, name, receiptDate, manufacturer);
+            return View("MyItems", filteredItems);
         }
     }
 }

@@ -9,5 +9,7 @@ namespace Stock.BusinessLogic.Interfaces
         Task AddItemAsync(Item item, User user);
         Task EditItemAsync(Item item, User user);
         Task RemoveItemAsync(int itemId, User user);
+        Task<List<Item>> GetFilteredItemsAsync(string name, DateTime? receiptDate, string manufacturer);
+        Task<List<Item>> GetFilteredUserItemsAsync(int userId, string name, DateTime? receiptDate, string manufacturer);
     }
 }

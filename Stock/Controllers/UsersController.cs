@@ -13,13 +13,14 @@ namespace Stock.Controllers
 			_usersService = usersService;
         }
 		[HttpGet]
-		//[Authorize(Roles ="Admin")]
-		public IActionResult AllUsers()
+        [Authorize(Roles = "Admin")]
+        public IActionResult AllUsers()
 		{
 			var users = _usersService.GetAllUsers();
 			return View(users);
 		}
 		[HttpPost]
+		[Authorize(Roles = "Admin")]
 		[Route("editUser")]
 		public async Task<ActionResult<string>> EditUser([FromForm] UserDto request, [FromForm] string password)
 		{
@@ -27,6 +28,7 @@ namespace Stock.Controllers
 			return RedirectToAction("AllUsers", "Users");
 		}
 		[HttpPost]
+		[Authorize(Roles = "Admin")]
 		[Route("removeUser")]
 		public async Task<IActionResult> RemoveUser([FromForm] int userId)
 		{

@@ -1,4 +1,5 @@
-﻿using Stock.BusinessLogic.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Stock.BusinessLogic.Interfaces;
 using Stock.Models;
 using Stock.Models.Models;
 
@@ -15,6 +16,42 @@ namespace Stock.BusinessLogic.Services
         {
             var items = _context.Items.ToList();
             return items;
+        }
+        public async Task<List<Item>> GetFilteredItemsAsync(string name, DateTime? receiptDate, string manufacturer)
+        {
+            var filteredItems = _context.Items.AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                filteredItems = filteredItems.Where(item => item.Name.Contains(name));
+
+            if (receiptDate.HasValue)
+            {
+                var date = receiptDate.Value.Date;
+                filteredItems = filteredItems.Where(item => item.ReceiptDate.Date == date);
+            }
+
+            if (!string.IsNullOrEmpty(manufacturer))
+                filteredItems = filteredItems.Where(item => item.Manufacturer.Contains(manufacturer));
+
+            return await filteredItems.ToListAsync();
+        }
+        public async Task<List<Item>> GetFilteredUserItemsAsync(int userId, string name, DateTime? receiptDate, string manufacturer)
+        {
+            var filteredUserItems = _context.Items.Where(item => item.UserId == userId).AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                filteredUserItems = filteredUserItems.Where(item => item.Name.Contains(name));
+
+            if (receiptDate.HasValue)
+            {
+                var date = receiptDate.Value.Date;
+                filteredUserItems = filteredUserItems.Where(item => item.ReceiptDate.Date == date);
+            }
+
+            if (!string.IsNullOrEmpty(manufacturer))
+                filteredUserItems = filteredUserItems.Where(item => item.Manufacturer.Contains(manufacturer));
+
+            return await filteredUserItems.ToListAsync();
         }
         public List<Item> GetUserItems(int userId)
         {
