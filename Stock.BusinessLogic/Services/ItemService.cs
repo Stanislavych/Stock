@@ -72,8 +72,8 @@ namespace Stock.BusinessLogic.Services
             if (currentItem == null)
                 throw new Exception("Предмет не найден");
 
-            if (currentItem.UserId != user.Id || item.UserId != user.Id)
-                throw new Exception("Вы не можете изменить чужой предмет");
+            if (user.RoleId != 1 && currentItem.UserId != user.Id || item.UserId != currentItem.UserId)
+                throw new Exception("Вы не можете изменить этот предмет");
 
             item.ReceiptDate = DateTime.Now;
             _context.Entry(currentItem).CurrentValues.SetValues(item);
@@ -86,11 +86,13 @@ namespace Stock.BusinessLogic.Services
             if (item == null)
                 throw new Exception("Предмет не найден");
 
-            if (item.UserId != user.Id)
+            if (user.RoleId == 1 || item.UserId == user.Id)
+            {
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+            else
                 throw new Exception("Вы не можете удалить чужой предмет");
-
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
         }
     }
 }

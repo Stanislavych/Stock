@@ -24,13 +24,13 @@ namespace Stock.BusinessLogic.Services
             _context = context;
         }
 
-        public async Task RegisterAsync(UserDto request)
+        public async Task RegisterAsync(UserDto request, string confirmPassword)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
             if (existingUser != null)
-            {
                 throw new Exception("Пользователь с таким именем уже существует");
-            }
+            if (request.Password != confirmPassword)
+                throw new Exception("Пароли не совпадают!");
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             User user = new User();
@@ -40,7 +40,7 @@ namespace Stock.BusinessLogic.Services
             user.RoleId = 2;
             _context.Users.Add(user);
             _context.SaveChanges();
-            
+
         }
         public async Task RegisterAdminAsync(UserDto request)
         {
@@ -58,13 +58,13 @@ namespace Stock.BusinessLogic.Services
             admin.RoleId = 1;
             _context.Users.Add(admin);
             _context.SaveChanges();
-            
+
         }
 
         public async Task<string> LoginAsync(UserDto request)
         {
             User user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (user==null)
+            if (user == null)
             {
                 throw new Exception("Пользователь не найден!");
             }

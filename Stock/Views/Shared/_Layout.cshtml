@@ -54,7 +54,7 @@
 					@if (User.Identity.IsAuthenticated)
 					{
 						<li class="nav-item">
-							<a class="nav-link" asp-controller="Auth" asp-action="Logout">Выход</a>
+							<a class="nav-link" href="#" data-toggle="modal" data-target="#confirmLogoutModal">Выход</a>
 						</li>
 					}
 					else
@@ -74,13 +74,37 @@
 	<div class="container py-4">
 		@RenderBody()
 	</div>
-
+	<div class="modal fade" id="confirmLogoutModal" tabindex="-1" role="dialog" aria-labelledby="confirmLogoutModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="confirmLogoutModalLabel">Подтвердите выход</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Вы уверены, что хотите выйти?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+					<a class="btn btn-primary" asp-controller="Auth" asp-action="Logout">Выход</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	<footer class="footer">
 		<div class="container">
 			<p>Склад &copy; @DateTime.Now.Year</p>
 		</div>
 	</footer>
-
+	<script>
+    $(document).ready(function() {
+        $('#confirmLogoutModal').on('show.bs.modal', function(e) {
+            $(this).find('.btn-primary').attr('href', $(e.relatedTarget).attr('href'));
+        });
+    });
+</script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

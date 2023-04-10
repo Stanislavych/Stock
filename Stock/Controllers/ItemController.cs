@@ -46,7 +46,10 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             await _itemService.EditItemAsync(item, user);
-            return RedirectToAction("MyItems");
+            if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
+                return RedirectToAction("MyItems");
+            else
+                return Redirect(HttpContext.Request.Headers["Referer"].ToString());
         }
         [HttpPost]
         [Authorize]
@@ -55,7 +58,10 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             await _itemService.RemoveItemAsync(itemId, user);
-            return RedirectToAction("MyItems");
+            if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
+                return RedirectToAction("MyItems");
+            else
+                return Redirect(HttpContext.Request.Headers["Referer"].ToString());
         }
         [HttpPost]
         public async Task<IActionResult> FilteringItems([FromForm] string name, [FromForm] DateTime? receiptDate, [FromForm] string manufacturer)
