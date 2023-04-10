@@ -49,13 +49,13 @@
 <!-- Кнопка для добавления нового предмета -->
 <div class="mb-2">
 	<div class="row">
-  <div class="col-4">
-    <button class="btn btn-success" data-toggle="modal" data-target="#addModal">Добавить предмет</button>
-  </div>
-  <div class="col-8">
-    <button type="button" class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#filterModal">Фильтр</button>
-  </div>
-</div>
+		<div class="col-4">
+			<button class="btn btn-success" data-toggle="modal" data-target="#addModal">Добавить предмет</button>
+		</div>
+		<div class="col-8">
+			<button type="button" class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#filterModal">Фильтр</button>
+		</div>
+	</div>
 </div>
 <div class="table-responsive">
 	<table class="table table-striped" style="white-space: nowrap; overflow-x: auto;">
@@ -101,7 +101,7 @@
 							<div class="modal-body">
 								<!-- Форма для редактирования данных о предмете -->
 							<form method="post" action="/item/edititem">
-								<input type="hidden" value="@item.UserId" name="UserId"/>
+									<input type="hidden" value="@item.UserId" name="UserId" />
 									<div class="form-group">
 										<label for="name-@item.Id">Название</label>
 										<input type="text" class="form-control" id="name-@item.Id" value="@item.Name" name="Name">
@@ -190,7 +190,7 @@
 					</div>
 					<div class="form-group">
 						<label for="image">Изображение</label>
-						<input type="text" class="form-control" id="image" name="Image">
+						<input type="file" class="form-control-file" id="image" name="Image">
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>

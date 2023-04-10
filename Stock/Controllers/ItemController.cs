@@ -9,11 +9,13 @@ namespace Stock.Controllers
     {
         private readonly IItemService _itemService;
         private readonly IUsersService _usersService;
-        public ItemController(IItemService itemService, IUsersService usersService)
+        private readonly ILogger<ItemController> _logger;
+        public ItemController(IItemService itemService, IUsersService usersService, ILogger<ItemController> logger)
         {
             _itemService = itemService;
             _usersService = usersService;
-        }
+			_logger = logger;
+		}
 
         [HttpGet]
         public IActionResult Index()
@@ -37,6 +39,7 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             await _itemService.AddItemAsync(item, user);
+            _logger.LogInformation($"Был добавлен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {username}");
             return RedirectToAction("MyItems");
         }
         [HttpPost]
@@ -46,6 +49,7 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             await _itemService.EditItemAsync(item, user);
+            _logger.LogInformation($"Был изменен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {username}");
             if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
                 return RedirectToAction("MyItems");
             else
@@ -58,6 +62,7 @@ namespace Stock.Controllers
             var username = User.Identity.Name;
             var user = _usersService.GetUserByName(username);
             await _itemService.RemoveItemAsync(itemId, user);
+            _logger.LogInformation($"Был удален предмет под номером \"{itemId}\" пользователем {username}");
             if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
                 return RedirectToAction("MyItems");
             else

@@ -26,9 +26,12 @@ namespace Stock.BusinessLogic.Services
 
         public async Task RegisterAsync(UserDto request, string confirmPassword)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (existingUser != null)
+            var existingUserByName = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            if (existingUserByName != null)
                 throw new Exception("Пользователь с таким именем уже существует");
+            var existingUserByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingUserByEmail != null)
+                throw new Exception("Пользователь с такой почтой уже существует");
             if (request.Password != confirmPassword)
                 throw new Exception("Пароли не совпадают!");
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -37,10 +40,10 @@ namespace Stock.BusinessLogic.Services
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            user.Email = request.Email;
             user.RoleId = 2;
             _context.Users.Add(user);
             _context.SaveChanges();
-
         }
         public async Task RegisterAdminAsync(UserDto request)
         {

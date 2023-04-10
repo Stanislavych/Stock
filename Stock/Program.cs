@@ -5,11 +5,18 @@ using Stock.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Stock.Common.Dto;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+    .ReadFrom.Configuration(hostingContext.Configuration)
+    .Enrich.FromLogContext()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -29,18 +36,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-
 var app = builder.Build();
 
 //создание первоначального админа
 //var authService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IAuthService>();
-
 //var admin = new UserDto { Username = "admin", Password = "admin" };
-//await authService.RegisterAdmin(admin);
+//await authService.RegisterAdminAsync(admin);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.Use(async (context, next) =>
 {

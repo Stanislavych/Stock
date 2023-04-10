@@ -10,7 +10,7 @@ namespace Stock.Models
         public DbSet<Role> Roles { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-            
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

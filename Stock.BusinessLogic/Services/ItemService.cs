@@ -64,7 +64,6 @@ namespace Stock.BusinessLogic.Services
             item.ReceiptDate = DateTime.Now;
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
-
         }
         public async Task EditItemAsync(Item item, User user)
         {
