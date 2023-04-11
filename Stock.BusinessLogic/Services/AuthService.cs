@@ -26,42 +26,49 @@ namespace Stock.BusinessLogic.Services
 
         public async Task RegisterAsync(UserDto request, string confirmPassword)
         {
-            var existingUserByName = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (existingUserByName != null)
+            var existingUserByName = await _context.Users.AnyAsync(u => u.Username == request.Username);
+            if (existingUserByName)
                 throw new Exception("Пользователь с таким именем уже существует");
-            var existingUserByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (existingUserByEmail != null)
+
+            var existingUserByEmail = await _context.Users.AnyAsync(u => u.Email == request.Email);
+            if (existingUserByEmail)
                 throw new Exception("Пользователь с такой почтой уже существует");
+
             if (request.Password != confirmPassword)
                 throw new Exception("Пароли не совпадают!");
+
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            User user = new User();
-            user.Username = request.Username;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.Email = request.Email;
-            user.RoleId = 2;
+            User user = new User
+            {
+                Username = request.Username,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Email = request.Email,
+                RoleId = 2
+            };
+
             _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         public async Task RegisterAdminAsync(UserDto request)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (existingUser != null)
-            {
+            var existingUser = await _context.Users.AnyAsync(u => u.Username == request.Username);
+            if (existingUser)
                 throw new Exception("Пользователь с таким именем уже существует");
-            }
+
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            User admin = new User();
-            admin.Username = request.Username;
-            admin.PasswordHash = passwordHash;
-            admin.PasswordSalt = passwordSalt;
-            admin.RoleId = 1;
-            _context.Users.Add(admin);
-            _context.SaveChanges();
+            User admin = new User
+            {
+                Username = request.Username,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                RoleId = 1
+            };
 
+            _context.Users.Add(admin);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<string> LoginAsync(UserDto request)
@@ -71,7 +78,7 @@ namespace Stock.BusinessLogic.Services
             {
                 throw new Exception("Пользователь не найден!");
             }
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!await VerifyPasswordHashAsync(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 throw new Exception("Неверный пароль!");
             }
@@ -109,13 +116,16 @@ namespace Stock.BusinessLogic.Services
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private async Task<bool> VerifyPasswordHashAsync(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
+            return await Task.Run(() =>
             {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
+                using (var hmac = new HMACSHA512(passwordSalt))
+                {
+                    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    return computedHash.SequenceEqual(passwordHash);
+                }
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Stock.BusinessLogic.Interfaces;
 using Stock.Common.Dto;
 using Stock.Models;
@@ -15,14 +16,13 @@ namespace Stock.BusinessLogic.Services
         {
             _context = context;
         }
-        public List<User> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
-            var users = _context.Users.ToList();
-            return users;
+            return await _context.Users.ToListAsync();
         }
-        public User GetUserByName(string username)
+        public async Task<User> GetUserByName(string username)
         {
-            return _context.Users.FirstOrDefault(u => u.Username == username);
+            return await Task.FromResult(_context.Users.FirstOrDefault(u => u.Username == username));
         }
         public async Task EditUserAsync(UserDto request, string password)
         {
@@ -58,6 +58,16 @@ namespace Stock.BusinessLogic.Services
             _context.SaveChanges();
 
         }
+        public async Task UpdatePassword(User user, string password, string newPassword)
+        {
+            if (!await VerifyPasswordHashAsync(password, user.PasswordHash, user.PasswordSalt))
+                throw new Exception("Неверный старый пароль!");
+            CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
         public async Task RemoveUserAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
@@ -72,6 +82,17 @@ namespace Stock.BusinessLogic.Services
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
+        }
+        private async Task<bool> VerifyPasswordHashAsync(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            return await Task.Run(() =>
+            {
+                using (var hmac = new HMACSHA512(passwordSalt))
+                {
+                    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    return computedHash.SequenceEqual(passwordHash);
+                }
+            });
         }
     }
 }

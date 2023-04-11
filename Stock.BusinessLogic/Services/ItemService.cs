@@ -12,9 +12,9 @@ namespace Stock.BusinessLogic.Services
         {
             _context = context;
         }
-        public List<Item> GetAllItems()
+        public async Task<List<Item>> GetAllItemsAsync()
         {
-            var items = _context.Items.ToList();
+            var items = await _context.Items.ToListAsync();
             return items;
         }
         public async Task<List<Item>> GetFilteredItemsAsync(string name, DateTime? receiptDate, string manufacturer)
@@ -53,16 +53,16 @@ namespace Stock.BusinessLogic.Services
 
             return await filteredUserItems.ToListAsync();
         }
-        public List<Item> GetUserItems(int userId)
+        public async Task<List<Item>> GetUserItemsAsync(int userId)
         {
-            var userItems = _context.Items.Where(item => item.UserId == userId).ToList();
+            var userItems = await _context.Items.Where(item => item.UserId == userId).ToListAsync();
             return userItems;
         }
         public async Task AddItemAsync(Item item, User user)
         {
             item.UserId = user.Id;
             item.ReceiptDate = DateTime.Now;
-            _context.Items.Add(item);
+            await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
         }
         public async Task EditItemAsync(Item item, User user)

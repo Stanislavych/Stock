@@ -5,9 +5,10 @@ namespace Stock.BusinessLogic.Interfaces
 {
 	public interface IUsersService
 	{
-		List<User> GetAllUsers();
-		User GetUserByName(string username);
+		Task<List<User>> GetAllUsers();
+		Task<User> GetUserByName(string username);
 		Task EditUserAsync(UserDto request, string password);
 		Task RemoveUserAsync(int userId);
+		Task UpdatePassword(User user, string password, string newPassword);
 	}
 }

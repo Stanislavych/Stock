@@ -53,8 +53,14 @@
 					}
 					@if (User.Identity.IsAuthenticated)
 					{
-						<li class="nav-item">
-							<a class="nav-link" href="#" data-toggle="modal" data-target="#confirmLogoutModal">Выход</a>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								@User.Identity.Name
+							</a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal">Настройки</a>
+								<a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirmLogoutModal">Выход</a>
+							</div>
 						</li>
 					}
 					else
@@ -93,18 +99,50 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="settingsModalLabel">Безопасность</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form form method="post" action="@Url.Action("UpdatePassword", "Users")">
+						<div class="form-group">
+							<label for="password">Старый пароль:</label>
+							<input type="password" class="form-control" id="password" name="OldPassword" >
+						</div>
+						<div class="form-group">
+							<label for="password">Новый пароль:</label>
+							<input type="password" class="form-control" id="newpassword" name="NewPassword" >
+						</div>
+						<div class="form-group">
+							<label for="password">Повторите новый пароль:</label>
+							<input type="password" class="form-control" id="confirmpassword" name="ConfirmPassword" >
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+							<button type="submit" class="btn btn-primary">Сохранить</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 	<footer class="footer">
 		<div class="container">
 			<p>Склад &copy; @DateTime.Now.Year</p>
 		</div>
 	</footer>
 	<script>
-    $(document).ready(function() {
-        $('#confirmLogoutModal').on('show.bs.modal', function(e) {
-            $(this).find('.btn-primary').attr('href', $(e.relatedTarget).attr('href'));
-        });
-    });
-</script>
+		$(document).ready(function() {
+			$('#confirmLogoutModal').on('show.bs.modal', function(e) {
+				$(this).find('.btn-primary').attr('href', $(e.relatedTarget).attr('href'));
+			});
+		});
+	</script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

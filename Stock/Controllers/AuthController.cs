@@ -4,8 +4,8 @@ using Stock.Common.Dto;
 
 namespace Stock.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -14,40 +14,36 @@ namespace Stock.Controllers
         {
             _authService = authService;
         }
-        [HttpGet("Register")]
-        public IActionResult Register()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        [Route("register")]
+        [HttpGet("register")]
+        public IActionResult Register() => View();
+
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromForm] UserDto request, [FromForm] string confirmPassword)
         {
             await _authService.RegisterAsync(request, confirmPassword);
-            return RedirectToAction("Login", "Auth");
+            return RedirectToAction("login");
         }
-        [HttpGet("Login")]
-        public IActionResult Login()
-        {
-            return View();
-        }
-        [HttpPost]
-        [Route("login")]
-        public async Task<ActionResult<string>> Login([FromForm] UserDto request)
+
+        [HttpGet("login")]
+        public IActionResult Login() => View();
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromForm] UserDto request)
         {
             string token = await _authService.LoginAsync(request);
 
-            // сохраняем токен в куки
             Response.Cookies.Append("jwt", token);
-            return RedirectToAction("Index", "Item");
+
+            return RedirectToAction("index", "item");
         }
+
+        [HttpGet("logout")]
         public IActionResult Logout()
         {
-            // Удаляем куки с токеном
             Response.Cookies.Delete("jwt");
 
-            return RedirectToAction("Index", "Item");
+            return RedirectToAction("index", "item");
         }
     }
 }

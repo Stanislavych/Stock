@@ -5,37 +5,44 @@ using Stock.Common.Dto;
 
 namespace Stock.Controllers
 {
-	public class UsersController : Controller
-	{
-		private readonly IUsersService _usersService;
-		public UsersController(IUsersService usersService)
-		{
-			_usersService = usersService;
+    [Route("api/[controller]")]
+    public class UsersController : Controller
+    {
+        private readonly IUsersService _usersService;
+        public UsersController(IUsersService usersService)
+        {
+            _usersService = usersService;
         }
-		[HttpGet]
+        [HttpGet("allUsers")]
         [Authorize(Roles = "Admin")]
-        public IActionResult AllUsers()
-		{
-			var users = _usersService.GetAllUsers();
-			return View(users);
-		}
-		[HttpPost]
-		[Authorize(Roles = "Admin")]
-		[Route("editUser")]
-		public async Task<ActionResult<string>> EditUser([FromForm] UserDto request, [FromForm] string password)
-		{
-			await _usersService.EditUserAsync(request, password);
-			return RedirectToAction("AllUsers", "Users");
-		}
-		[HttpPost]
-		[Authorize(Roles = "Admin")]
-		[Route("removeUser")]
-		public async Task<IActionResult> RemoveUser([FromForm] int userId)
-		{
-			var username = User.Identity.Name;
-			var user = _usersService.GetUserByName(username);
-			await _usersService.RemoveUserAsync(userId);
-			return RedirectToAction("AllUsers", "Users");
-		}
-	}
+        public async Task<IActionResult> AllUsers()
+        {
+            var users = await _usersService.GetAllUsers();
+            return View(users);
+        }
+        [HttpPost("editUser")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditUser([FromForm] UserDto request, [FromForm] string password)
+        {
+            await _usersService.EditUserAsync(request, password);
+            return RedirectToAction("AllUsers", "Users");
+        }
+        [HttpPost("removeUser")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RemoveUser([FromForm] int userId)
+        {
+            await _usersService.RemoveUserAsync(userId);
+            return RedirectToAction("AllUsers", "Users");
+        }
+        [HttpPost("changePassword")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto model)
+        {
+            if (model.NewPassword != model.ConfirmPassword)
+                throw new Exception("Новые пароли не совпадают!");
+            var user = await _usersService.GetUserByName(User.Identity.Name);
+            _usersService.UpdatePassword(user, model.OldPassword, model.NewPassword);
+            return RedirectToAction("Index", "Item");
+        }
+    }
 }

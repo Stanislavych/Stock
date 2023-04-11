@@ -14,73 +14,54 @@ namespace Stock.Controllers
         {
             _itemService = itemService;
             _usersService = usersService;
-			_logger = logger;
-		}
+            _logger = logger;
+        }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index() => View(await _itemService.GetAllItemsAsync());
+        [HttpGet, Authorize]
+        public async Task<IActionResult> MyItems()
         {
-            var items = _itemService.GetAllItems();
-            return View(items);
+            var user = await _usersService.GetUserByName(User.Identity.Name);
+            var userItems = await _itemService.GetUserItemsAsync(user.Id);
+            return View(userItems);
         }
-        [HttpGet]
-        [Authorize]
-        public IActionResult MyItems()
-        {
-            var username = User.Identity.Name;
-            var user = _usersService.GetUserByName(username);
-            var items = _itemService.GetUserItems(user.Id);
-            return View(items);
-        }
-        [HttpPost]
-        [Authorize]
+        [HttpPost, Authorize]
         public async Task<IActionResult> AddItem([FromForm] Item item)
         {
-            var username = User.Identity.Name;
-            var user = _usersService.GetUserByName(username);
+            var user = await _usersService.GetUserByName(User.Identity.Name);
             await _itemService.AddItemAsync(item, user);
-            _logger.LogInformation($"Был добавлен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {username}");
+            _logger.LogInformation($"Был добавлен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {User.Identity.Name}");
             return RedirectToAction("MyItems");
         }
-        [HttpPost]
-        [Authorize]
+        [HttpPost, Authorize]
         public async Task<IActionResult> EditItem([FromForm] Item item)
         {
-            var username = User.Identity.Name;
-            var user = _usersService.GetUserByName(username);
+            var user = await _usersService.GetUserByName(User.Identity.Name);
             await _itemService.EditItemAsync(item, user);
-            _logger.LogInformation($"Был изменен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {username}");
-            if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
-                return RedirectToAction("MyItems");
-            else
-                return Redirect(HttpContext.Request.Headers["Referer"].ToString());
+            _logger.LogInformation($"Был изменен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {User.Identity.Name}");
+            return HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems") ?
+       RedirectToAction("MyItems") :
+       Redirect(HttpContext.Request.Headers["Referer"].ToString());
         }
-        [HttpPost]
-        [Authorize]
+        [HttpPost, Authorize]
         public async Task<IActionResult> RemoveItem([FromForm] int itemId)
         {
-            var username = User.Identity.Name;
-            var user = _usersService.GetUserByName(username);
+            var user = await _usersService.GetUserByName(User.Identity.Name);
             await _itemService.RemoveItemAsync(itemId, user);
-            _logger.LogInformation($"Был удален предмет под номером \"{itemId}\" пользователем {username}");
-            if (HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems"))
-                return RedirectToAction("MyItems");
-            else
-                return Redirect(HttpContext.Request.Headers["Referer"].ToString());
+            _logger.LogInformation($"Был удален предмет под номером \"{itemId}\" пользователем {User.Identity.Name}");
+            return HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems") ?
+       RedirectToAction("MyItems") :
+       Redirect(HttpContext.Request.Headers["Referer"].ToString());
         }
         [HttpPost]
         public async Task<IActionResult> FilteringItems([FromForm] string name, [FromForm] DateTime? receiptDate, [FromForm] string manufacturer)
-        {
-            var filteredItems = await _itemService.GetFilteredItemsAsync(name, receiptDate, manufacturer);
-            return View("Index", filteredItems);
-        }
-        [HttpPost]
+    => View("Index", await _itemService.GetFilteredItemsAsync(name, receiptDate, manufacturer));
+        [HttpPost, Authorize]
         public async Task<IActionResult> FilteringUserItems([FromForm] string name, [FromForm] DateTime? receiptDate, [FromForm] string manufacturer)
         {
-            var username = User.Identity.Name;
-            var user = _usersService.GetUserByName(username);
-            var filteredItems = await _itemService.GetFilteredUserItemsAsync(user.Id, name, receiptDate, manufacturer);
-            return View("MyItems", filteredItems);
+            var user = _usersService.GetUserByName(User.Identity.Name);
+            return View("MyItems", await _itemService.GetFilteredUserItemsAsync(user.Id, name, receiptDate, manufacturer));
         }
     }
 }
