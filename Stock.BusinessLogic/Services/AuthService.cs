@@ -7,7 +7,6 @@ using Stock.Models;
 using Stock.Models.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Stock.BusinessLogic.Services
@@ -17,11 +16,13 @@ namespace Stock.BusinessLogic.Services
 
         private readonly IConfiguration _configuration;
         private readonly ApplicationContext _context;
+        private readonly IPasswordHashService _passwordHash;
 
-        public AuthService(IConfiguration configuration, ApplicationContext context)
+        public AuthService(IConfiguration configuration, ApplicationContext context, IPasswordHashService passwordHash)
         {
             _configuration = configuration;
             _context = context;
+            _passwordHash = passwordHash;
         }
 
         public async Task RegisterAsync(UserDto request, string confirmPassword)
@@ -37,7 +38,7 @@ namespace Stock.BusinessLogic.Services
             if (request.Password != confirmPassword)
                 throw new Exception("Пароли не совпадают!");
 
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            _passwordHash.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             User user = new User
             {
@@ -57,7 +58,7 @@ namespace Stock.BusinessLogic.Services
             if (existingUser)
                 throw new Exception("Пользователь с таким именем уже существует");
 
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            _passwordHash.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             User admin = new User
             {
@@ -75,13 +76,9 @@ namespace Stock.BusinessLogic.Services
         {
             User user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == request.Username);
             if (user == null)
-            {
                 throw new Exception("Пользователь не найден!");
-            }
-            if (!await VerifyPasswordHashAsync(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
+            if (!await _passwordHash.VerifyPasswordHashAsync(request.Password, user.PasswordHash, user.PasswordSalt))
                 throw new Exception("Неверный пароль!");
-            }
             string token = CreateToken(user);
             return token;
         }
@@ -108,25 +105,6 @@ namespace Stock.BusinessLogic.Services
             return jwt;
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
-        }
-        private async Task<bool> VerifyPasswordHashAsync(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            return await Task.Run(() =>
-            {
-                using (var hmac = new HMACSHA512(passwordSalt))
-                {
-                    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                    return computedHash.SequenceEqual(passwordHash);
-                }
-            });
-        }
     }
 }
 

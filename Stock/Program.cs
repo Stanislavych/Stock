@@ -15,7 +15,9 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
     .ReadFrom.Configuration(hostingContext.Configuration)
     .Enrich.FromLogContext()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day));
+    .WriteTo.File(Path.Combine("logs", "log.txt"), rollingInterval: RollingInterval.Day).Filter.ByExcluding(e => e.Level == LogEventLevel.Error &&
+        e.Properties.ContainsKey("Category") &&
+        e.Properties["Category"].ToString().Contains("DataProtection")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,6 +25,7 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {

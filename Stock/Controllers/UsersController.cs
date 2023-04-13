@@ -13,29 +13,25 @@ namespace Stock.Controllers
         {
             _usersService = usersService;
         }
-        [HttpGet("allUsers")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("allUsers"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllUsers()
         {
             var users = await _usersService.GetAllUsers();
             return View(users);
         }
-        [HttpPost("editUser")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("editUser"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditUser([FromForm] UserDto request, [FromForm] string password)
         {
             await _usersService.EditUserAsync(request, password);
             return RedirectToAction("AllUsers", "Users");
         }
-        [HttpPost("removeUser")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("removeUser"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveUser([FromForm] int userId)
         {
             await _usersService.RemoveUserAsync(userId);
             return RedirectToAction("AllUsers", "Users");
         }
-        [HttpPost("changePassword")]
-        [Authorize]
+        [HttpPost("changePassword"), Authorize]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDto model)
         {
             if (model.NewPassword != model.ConfirmPassword)

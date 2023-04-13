@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Stock.BusinessLogic.Interfaces;
 using Stock.Common.Dto;
 
@@ -38,7 +39,7 @@ namespace Stock.Controllers
             return RedirectToAction("index", "item");
         }
 
-        [HttpGet("logout")]
+        [HttpGet("logout"), Authorize]
         public IActionResult Logout()
         {
             Response.Cookies.Delete("jwt");
