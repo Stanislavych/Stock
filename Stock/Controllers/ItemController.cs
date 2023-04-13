@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stock.BusinessLogic.Interfaces;
+using Stock.Models;
 using Stock.Models.Models;
 
 namespace Stock.Controllers
@@ -10,11 +11,13 @@ namespace Stock.Controllers
         private readonly IItemService _itemService;
         private readonly IUsersService _usersService;
         private readonly ILogger<ItemController> _logger;
-        public ItemController(IItemService itemService, IUsersService usersService, ILogger<ItemController> logger)
+        private readonly ApplicationContext _context;
+        public ItemController(IItemService itemService, IUsersService usersService, ILogger<ItemController> logger, ApplicationContext context)
         {
             _itemService = itemService;
             _usersService = usersService;
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet]
@@ -30,15 +33,41 @@ namespace Stock.Controllers
         public async Task<IActionResult> AddItem([FromForm] Item item)
         {
             var user = await _usersService.GetUserByName(User.Identity.Name);
-            await _itemService.AddItemAsync(item, user);
+            var file = Request.Form.Files.FirstOrDefault();
+            using (var fileStream = file.OpenReadStream())
+            {
+                await _itemService.AddItemAsync(item, user, fileStream);
+            }
             _logger.LogInformation($"Был добавлен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {User.Identity.Name}");
             return RedirectToAction("MyItems");
+        }
+        [HttpGet]
+        public IActionResult GetImage(int id)
+        {
+            var item = _context.Items.FirstOrDefault(i => i.Id == id);
+            if (item != null && item.Image != null)
+            {
+                return File(item.Image, "image/png");
+            }
+            return NotFound();
         }
         [HttpPost, Authorize]
         public async Task<IActionResult> EditItem([FromForm] Item item)
         {
             var user = await _usersService.GetUserByName(User.Identity.Name);
-            await _itemService.EditItemAsync(item, user);
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file != null)
+            {
+                using (var fileStream = file.OpenReadStream())
+                {
+                    await _itemService.EditItemAsync(item, user, fileStream);
+                }
+            }
+            else
+            {
+                await _itemService.EditItemAsync(item, user);
+            }
+
             _logger.LogInformation($"Был изменен предмет \"{item.Name}\" под номером \"{item.Id}\" пользователем {User.Identity.Name}");
             return HttpContext.Request.Headers["Referer"].ToString().Contains("MyItems") ?
        RedirectToAction("MyItems") :

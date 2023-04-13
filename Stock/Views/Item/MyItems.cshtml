@@ -81,7 +81,9 @@
 					<td>@item.ReceiptDate.ToString("yyyy-MM-dd")</td>
 					<td>@item.Manufacturer</td>
 					<td>@item.ManufacturerAddress</td>
-					<td>@item.Image</td>
+					<td>
+    <button onclick="window.open('@Url.Action("GetImage", "Item", new { id = item.Id })')">Открыть изображение</button>
+</td>
 					<td>
 						<!-- Кнопки для изменения и удаления предмета -->
 					<button class="btn btn-primary" data-toggle="modal" data-target="#editModal-@item.Id">Изменить</button>
@@ -100,7 +102,7 @@
 							</div>
 							<div class="modal-body">
 								<!-- Форма для редактирования данных о предмете -->
-							<form method="post" action="/item/edititem">
+							<form method="post" action="/item/edititem" enctype="multipart/form-data">
 									<input type="hidden" value="@item.UserId" name="UserId" />
 									<div class="form-group">
 										<label for="name-@item.Id">Название</label>
@@ -119,9 +121,9 @@
 										<input type="text" class="form-control" id="manufacturerAddress-@item.Id" value="@item.ManufacturerAddress" name="ManufacturerAddress">
 									</div>
 									<div class="form-group">
-										<label for="image-@item.Id">Изображение</label>
-										<input type="text" class="form-control" id="image-@item.Id" value="@item.Image" name="Image">
-									</div>
+						<label for="image">Изображение</label>
+						<input type="file" class="form-control-file" id="image" name="Image">
+					</div>
 									<input type="hidden" value="@item.Id" name="Id" />
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
@@ -171,7 +173,7 @@
 			</div>
 			<div class="modal-body">
 				<!-- Форма для добавления нового предмета -->
-				<form method="post" action="/item/additem">
+				<form method="post" action="/item/additem" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Название</label>
 						<input type="text" class="form-control" id="name" name="Name">

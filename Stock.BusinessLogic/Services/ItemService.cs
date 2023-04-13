@@ -58,11 +58,40 @@ namespace Stock.BusinessLogic.Services
             var userItems = await _context.Items.Where(item => item.UserId == userId).ToListAsync();
             return userItems;
         }
-        public async Task AddItemAsync(Item item, User user)
+        public async Task AddItemAsync(Item item, User user, Stream fileStream)
         {
             item.UserId = user.Id;
             item.ReceiptDate = DateTime.Now;
+            if (fileStream != null && fileStream.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await fileStream.CopyToAsync(memoryStream);
+                    item.Image = memoryStream.ToArray();
+                }
+            }
             await _context.Items.AddAsync(item);
+            await _context.SaveChangesAsync();
+        }
+        public async Task EditItemAsync(Item item, User user, Stream fileStream)
+        {
+            var currentItem = await _context.Items.FindAsync(item.Id);
+            if (currentItem == null)
+                throw new Exception("Предмет не найден");
+
+            if (user.RoleId != 1 && currentItem.UserId != user.Id || item.UserId != currentItem.UserId)
+                throw new Exception("Вы не можете изменить этот предмет");
+            if (fileStream != null && fileStream.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await fileStream.CopyToAsync(memoryStream);
+                    item.Image = memoryStream.ToArray();
+                }
+            }
+
+            item.ReceiptDate = DateTime.Now;
+            _context.Entry(currentItem).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
         }
         public async Task EditItemAsync(Item item, User user)
@@ -73,7 +102,8 @@ namespace Stock.BusinessLogic.Services
 
             if (user.RoleId != 1 && currentItem.UserId != user.Id || item.UserId != currentItem.UserId)
                 throw new Exception("Вы не можете изменить этот предмет");
-
+            if (item.Image == null)
+                item.Image = currentItem.Image;
             item.ReceiptDate = DateTime.Now;
             _context.Entry(currentItem).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
