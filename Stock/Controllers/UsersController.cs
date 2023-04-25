@@ -20,13 +20,14 @@ namespace Stock.Controllers
             return View(users);
         }
         [HttpPost("editUser"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> EditUser([FromForm] UserDto request, [FromForm] string password)
+        public async Task<IActionResult> EditUser([FromForm] UserDto request, [FromForm] string password, int userId)
         {
+            request.Id = userId;
             await _usersService.EditUserAsync(request, password);
             return RedirectToAction("AllUsers", "Users");
         }
         [HttpPost("removeUser"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RemoveUser([FromForm] int userId)
+        public async Task<IActionResult> RemoveUser(int userId)
         {
             await _usersService.RemoveUserAsync(userId);
             return RedirectToAction("AllUsers", "Users");

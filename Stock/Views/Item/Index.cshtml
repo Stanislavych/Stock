@@ -5,7 +5,6 @@
 	ViewData["Title"] = "Склад";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <h1 class="d-flex align-items-center justify-content-between">
 	Список предметов
 	<button type="button" class="btn btn-outline-primary ml-auto" data-toggle="modal" data-target="#filterModal">
@@ -50,7 +49,6 @@
 	</div>
 </div>
 
-
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead class="thead-dark">
@@ -79,13 +77,13 @@
 					<td>@item.Manufacturer</td>
 					<td>@item.ManufacturerAddress</td>
 					<td>
-    <button onclick="window.open('@Url.Action("GetImage", "Item", new { id = item.Id })')">Открыть изображение</button>
-</td>
+						<button onclick="window.open('@Url.Action("GetImage", "Item", new { id = item.Id })')">Открыть изображение</button>
+					</td>
 					@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 					{
 						<td>
 							<!-- Кнопки для изменения и удаления предмета -->
-							<button class="btn btn-primary" data-toggle="modal" style="width:100px" data-target="#editModal-@item.Id">Изменить</button>
+					<button class="btn btn-primary" data-toggle="modal" style="width:100px" data-target="#editModal-@item.Id">Изменить</button>
 							<button class="btn btn-danger" data-toggle="modal" style="width:100px" data-target="#deleteModal-@item.Id">Удалить</button>
 						</td>
 					}
@@ -104,8 +102,7 @@
 								Вы уверены, что хотите удалить предмет @item.Name?
 							</div>
 							<div class="modal-footer">
-								<form method="post" action="@Url.Action("RemoveItem", "Item")">
-									<input type="hidden" value="@item.Id" name="itemId" />
+								<form method="post" action="@Url.Action("RemoveItem", "Item", new { itemId = item.Id })">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 									<button type="submit" class="btn btn-danger">Удалить</button>
 								</form>
@@ -125,8 +122,7 @@
 							</div>
 							<div class="modal-body">
 								<!-- Форма для редактирования данных о предмете -->
-							<form method="post" action="/item/edititem" enctype="multipart/form-data">
-									<input type="hidden" value="@item.UserId" name="UserId" />
+							<form method="post" action="@Url.Action("EditItem", "Item", new { itemId = item.Id })">
 									<div class="form-group">
 										<label for="name-@item.Id">Название</label>
 										<input type="text" class="form-control" id="name-@item.Id" value="@item.Name" name="Name">
@@ -144,10 +140,9 @@
 										<input type="text" class="form-control" id="manufacturerAddress-@item.Id" value="@item.ManufacturerAddress" name="ManufacturerAddress">
 									</div>
 									<div class="form-group">
-						<label for="image">Изображение</label>
-						<input type="file" class="form-control-file" id="image" name="Image">
-					</div>
-									<input type="hidden" value="@item.Id" name="Id" />
+										<label for="image">Изображение</label>
+										<input type="file" class="form-control-file" id="image" name="Image">
+									</div>
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 										<button type="submit" class="btn btn-primary">Сохранить изменения</button>

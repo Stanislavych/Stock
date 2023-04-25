@@ -49,7 +49,7 @@
 							</div>
 							<div class="modal-body">
 								<!-- Форма для редактирования данных о пользователе -->
-							<form form method="post" action="@Url.Action("EditUser", "Users")">
+							<form form method="post" action="@Url.Action("EditUser", "Users", new {userId = user.Id})">
 									<div class="form-group">
 										<label for="name-@user.Id">Логин</label>
 										<input type="text" class="form-control" id="name-@user.Id" value="@user.Username" name="Username">
@@ -69,7 +69,6 @@
 											}>Пользователь</option>
 										</select>
 									</div>
-									<input type="hidden" value="@user.Id" name="Id" />
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 										<button type="submit" class="btn btn-primary">Сохранить изменения</button>
@@ -93,8 +92,7 @@
 								Вы уверены, что хотите удалить пользователя @user.Username?
 							</div>
 							<div class="modal-footer">
-								<form method="post" action="@Url.Action("RemoveUser", "Users")">
-									<input type="hidden" value="@user.Id" name="userId" />
+								<form method="post" action="@Url.Action("RemoveUser", "Users", new {userId = user.Id})">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
 									<button type="submit" class="btn btn-danger">Удалить</button>
 								</form>

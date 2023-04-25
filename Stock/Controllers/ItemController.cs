@@ -52,9 +52,11 @@ namespace Stock.Controllers
             return NotFound();
         }
         [HttpPost, Authorize]
-        public async Task<IActionResult> EditItem([FromForm] Item item)
+        public async Task<IActionResult> EditItem(int itemId, [FromForm] Item item)
         {
+            item.Id = itemId;
             var user = await _usersService.GetUserByName(User.Identity.Name);
+            item.UserId = user.Id;
             var file = Request.Form.Files.FirstOrDefault();
             if (file != null)
             {
@@ -74,7 +76,7 @@ namespace Stock.Controllers
        Redirect(HttpContext.Request.Headers["Referer"].ToString());
         }
         [HttpPost, Authorize]
-        public async Task<IActionResult> RemoveItem([FromForm] int itemId)
+        public async Task<IActionResult> RemoveItem(int itemId)
         {
             var user = await _usersService.GetUserByName(User.Identity.Name);
             await _itemService.RemoveItemAsync(itemId, user);

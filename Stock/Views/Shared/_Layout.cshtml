@@ -7,28 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>@ViewData["Title"]</title>
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
-	<style>
-		.navbar-brand {
-			font-size: 30px;
-			font-weight: bold;
-			color: #fff;
-		}
-
-		.nav-link {
-			color: #fff;
-		}
-
-		.footer {
-			background-color: #212529;
-			color: #fff;
-			position: fixed;
-			left: 0;
-			bottom: 0;
-			width: 100%;
-			padding: 10px;
-			text-align: center;
-		}
-	</style>
+	<link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -112,15 +91,15 @@
 					<form form method="post" action="@Url.Action("UpdatePassword", "Users")">
 						<div class="form-group">
 							<label for="password">Старый пароль:</label>
-							<input type="password" class="form-control" id="password" name="OldPassword" >
+							<input type="password" class="form-control" id="password" name="OldPassword">
 						</div>
 						<div class="form-group">
 							<label for="password">Новый пароль:</label>
-							<input type="password" class="form-control" id="newpassword" name="NewPassword" >
+							<input type="password" class="form-control" id="newpassword" name="NewPassword">
 						</div>
 						<div class="form-group">
 							<label for="password">Повторите новый пароль:</label>
-							<input type="password" class="form-control" id="confirmpassword" name="ConfirmPassword" >
+							<input type="password" class="form-control" id="confirmpassword" name="ConfirmPassword">
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
@@ -136,15 +115,8 @@
 			<p>Склад &copy; @DateTime.Now.Year</p>
 		</div>
 	</footer>
-	<script>
-		$(document).ready(function() {
-			$('#confirmLogoutModal').on('show.bs.modal', function(e) {
-				$(this).find('.btn-primary').attr('href', $(e.relatedTarget).attr('href'));
-			});
-		});
-	</script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" /></script>
 </body>
 </html>
